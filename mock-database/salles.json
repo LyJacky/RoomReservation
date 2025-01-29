@@ -1,0 +1,86 @@
+[
+  {
+      "_id": "6795408c8c6caf6f8420868f",
+      "name": "Salle #1",
+      "description": "Salle #1",
+      "capacity": 5,
+      "created_at": "2016-12-07T12:39:29.812Z",
+      "updated_at": "2016-12-08T17:31:39.489Z",
+      "equipments": [
+          {
+              "name": "TV"
+          },
+          {
+              "name": "Retro Projecteur"
+          }
+      ]
+  },
+  {
+      "_id": "679686cf25abb4ea97d18614",
+      "name": "salle #2",
+      "description": "Salle #2",
+      "capacity": 5,
+      "equipments": [
+          {
+              "name": "TV"
+          },
+          {
+              "name": "Retro Projecteur"
+          }
+      ],
+      "created_at": "2025-01-26T19:02:39.507Z",
+      "updated_at": "2025-01-26T19:02:39.508Z",
+      "__v": 0
+  },
+  {
+      "_id": "679686d425abb4ea97d18616",
+      "name": "salle #3",
+      "description": "Salle #3",
+      "capacity": 5,
+      "equipments": [
+          {
+              "name": "TV"
+          },
+          {
+              "name": "Retro Projecteur"
+          }
+      ],
+      "created_at": "2025-01-26T19:02:44.927Z",
+      "updated_at": "2025-01-26T19:02:44.927Z",
+      "__v": 0
+  },
+  {
+      "_id": "679686d825abb4ea97d18618",
+      "name": "salle #4",
+      "description": "Salle #4",
+      "capacity": 5,
+      "equipments": [
+          {
+              "name": "TV"
+          },
+          {
+              "name": "Retro Projecteur"
+          }
+      ],
+      "created_at": "2025-01-26T19:02:48.573Z",
+      "updated_at": "2025-01-26T19:02:48.573Z",
+      "__v": 0
+  },
+  {
+      "_id": "6796a48e30b5e2ab46554ffb",
+      "name": "salle #5",
+      "description": "Salle #5",
+      "capacity": 5,
+      "equipments": [
+          {
+              "name": "TV"
+          },
+          {
+              "name": "Retro Projecteur"
+          }
+      ],
+      "created_at": "2025-01-26T21:09:34.254Z",
+      "updated_at": "2025-01-26T21:09:34.254Z",
+      "__v": 0
+  }
+]
