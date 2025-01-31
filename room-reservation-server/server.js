@@ -19,7 +19,6 @@ app.use(express.json());
 // require in our resource routes
 const reservation = require('./api/reservations/reservation.routes.js');
 const room = require('./api/rooms/room.routes.js');
-// const bookmarks = require('./api/bookmarks/bookmark.routes.js');
 
 // mount the resource routes to our express app
 app.use('/reservation', reservation);

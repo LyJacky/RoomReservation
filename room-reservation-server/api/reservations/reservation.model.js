@@ -15,10 +15,6 @@ const ReservationSchema = new mongoose.Schema(
         },
         created_by_name: String,
     },
-    // {
-    //     toObject: { virtuals: true },
-    //     toJSON: { virtuals: true }
-    // }
 );
 
 const Reservation = mongoose.model('Reservation', ReservationSchema);

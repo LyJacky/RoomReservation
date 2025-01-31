@@ -88,9 +88,7 @@ const createReservation = async (req, res) => {
     }
 };
 const cancelReservation = async (req, res) => {
-    console.log('I MADE IT INSIDE THE CANCEL 12321312');
     const { body } = req;
-    
     const id = body.id;
     const status = {status: "cancelled"}
     console.log(body);
@@ -111,16 +109,6 @@ const cancelReservation = async (req, res) => {
     }
 };
 
-// const checkData = async () => {
-//     try {
-//         // Find all reservations and populate the room_id field
-//         const reservations = await Reservation.find().populate('room_id');
-//         console.log('Reservations:', reservations);
-//     } catch (error) {
-//         console.error('Error fetching reservations:', error);
-//     }
-// };
-// checkData();
 
 module.exports = {
     getReservations,

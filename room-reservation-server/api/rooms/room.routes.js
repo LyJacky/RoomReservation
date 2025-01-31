@@ -6,5 +6,7 @@ const controller = require('./room.controller');
 router.get('/', controller.getRooms);
 // POST /rooms
 router.post('/', controller.createRoom);
+// PUT /rooms/:id
+router.put('/:id', controller.editRoom);
 
 module.exports = router;

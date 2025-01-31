@@ -14,7 +14,7 @@
         >
           <div>
             <h3 class="font-bold">Reserved by: {{ reservation.created_by_name }}</h3>
-            <h3 class="font-bold">Room Name: {{ reservation.room_id.name }}</h3>
+            <h3 class="font-bold">Room Name: {{ reservation.room_id?.name }}</h3>
             <p class="text-gray-600">
             {{ formatDate(reservation.start_time) }} at {{ formatTime(reservation.start_time) }}
               - {{ formatDate(reservation.end_time) }} at {{ formatTime(reservation.end_time) }}

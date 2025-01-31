@@ -59,7 +59,29 @@ const deleteRoom = async (req, res) => {
         res.status(500).json({ error: error.toString() });
     }
 };
+const editRoom = async (req, res) => {
+    const { params, body } = req;
+    console.log(body.updated_at)
+    body.updated_at = new Date();
+    console.log(body.updated_at)
+    const id = params.id;
+    console.log(body);
+    console.log("THE ID IS ",id)
 
+    try {
+        const room = await Room.findOneAndUpdate({ _id: id }, body, {
+            new: true
+        });
+
+        if (room) {
+            res.json(room);
+        } else {
+            res.status(404).json({ error: `No Room found by id: ${id}` });
+        }
+    } catch (error) {
+        res.status(500).json({ error: error.toString() });
+    }
+};
 // const checkData = async () => {
 //     const rooms = await Room.find();
 //     console.log('Rooms:', rooms);
@@ -68,6 +90,7 @@ const deleteRoom = async (req, res) => {
 
 module.exports = {
     getRooms,
-    createRoom
+    createRoom,
+    editRoom
 };
  

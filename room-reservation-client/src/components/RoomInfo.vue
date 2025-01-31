@@ -6,23 +6,28 @@
   
         <!-- Display Room Description -->
         <p class="text-gray-500 text-sm">{{ room.description }}</p>
-  
+        
+
         <!-- Display Room Capacity -->
-        <p class="text-gray-500 text-sm">Capacity: {{ room.capacity }} people</p>
+        
+        <i class="text-gray-500 text-sm fa fa-users"></i> 
+        <span class="text-gray-500 ml-0.5">{{ room.capacity }}</span>
+
+        <i v-if="available" class="text-green-500 fa fa-check ml-2"> Available</i> 
+        <i v-if="!available" class="text-red-500 fa fa-minus-circle ml-2"> Unavailable</i>
+        
   
         <!-- Display Equipment List -->
         <div v-if="room.equipments && room.equipments.length > 0">
-          <h4 class="text-gray-700 font-medium text-sm">Equipments:</h4>
-          <ul class="list-disc pl-5 text-gray-600 text-sm">
-            <li v-for="(equipment, index) in room.equipments" :key="index">
-              {{ equipment.name }}  <!-- Assuming equipment object has a "name" property -->
-            </li>
-          </ul>
+          <span class="text-gray-700 font-medium text-sm"> Equipments : </span>
+          <span class="text-gray-600 text-sm">
+            {{ room.equipments.map(equipment => equipment.name).join(', ') }}
+          </span>
         </div>
       </div>
   
       <!-- Reserve Button -->
-      <button 
+      <button  v-if=available
         @click="handleReserve" 
         class="mt-4 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition"
       >
@@ -40,6 +45,7 @@
       type: Object,
       required: true,
     },
+    available: true,
   });
   
   const emit = defineEmits(['reserve']);

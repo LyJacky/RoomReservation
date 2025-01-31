@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import RoomDisplay from '../views/RoomDisplay.vue'
 import CreateRoom from '../views/CreateRoom.vue'
-import DeleteRoom from '../views/DeleteRoom.vue'
 import Reservation from '../views/Reservation.vue'
 import UserPage from '../views/UserPage.vue'
 
@@ -20,10 +19,6 @@ const router = createRouter({
     {
       path: '/create-room',
       component: CreateRoom
-    },
-    {
-      path: '/delete-room',
-      component: DeleteRoom
     },
     {
       path: '/reservations',
