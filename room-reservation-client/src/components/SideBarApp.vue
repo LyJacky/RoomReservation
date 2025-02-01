@@ -17,64 +17,44 @@ const toggleSidebar = () => {
 </script>
 
 <template>
-  <aside
-    :class="[
-      'fixed top-0 left-0 h-full bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-lg transform transition-all duration-300 ease-in-out',
-      isSidebarOpen ? 'w-64' : 'w-16',
-    ]"
-  >
+  <aside :class="[
+    'fixed top-0 left-0 h-full bg-gradient-to-b from-gray-700 to-gray-900 text-white shadow-lg transform transition-all duration-300 ease-in-out',
+    isSidebarOpen ? 'w-64' : 'w-16',
+  ]">
     <div class="p-4">
       <div v-if="isSidebarOpen">
-        <RouterLink
-          to="/"
+        <RouterLink to="/"
           class="flex items-center py-3 px-4 rounded-lg transition-colors duration-200 mb-2 hover:bg-gray-500"
-          :class="{ 'bg-gray-600': route.path === '/' }"
-          @click="toggleSidebar"
-        >
+          :class="{ 'bg-gray-600': route.path === '/' }" @click="toggleSidebar">
           <i class="fa fa-home mr-3"></i> My Reservations
         </RouterLink>
-        <RouterLink
-          to="/reservations"
+        <RouterLink to="/reservations"
           class="flex items-center py-3 px-4 rounded-lg transition-colors duration-200 mb-2 hover:bg-gray-500"
-          :class="{ 'bg-gray-600': route.path === '/reservations' }"
-          @click="toggleSidebar"
-        >
+          :class="{ 'bg-gray-600': route.path === '/reservations' }" @click="toggleSidebar">
           <i class="fa fa-calendar mr-3"></i> Reservations
         </RouterLink>
-        <RouterLink
-          to="/room"
+        <RouterLink to="/room"
           class="flex items-center py-3 px-4 rounded-lg transition-colors duration-200 mb-2 hover:bg-gray-500"
-          :class="{ 'bg-gray-600': route.path === '/room' }"
-          @click="toggleSidebar"
-        >
+          :class="{ 'bg-gray-600': route.path === '/room' }" @click="toggleSidebar">
           <i class="fa fa-building-o mr-3"></i> Rooms
         </RouterLink>
       </div>
       <div v-else class="flex flex-col items-center space-y-6 py-10">
-        <RouterLink
-          to="/"
+        <RouterLink to="/"
           class="text-white text-3xl p-3 rounded-lg transition-colors duration-200 relative group hover:bg-gray-500"
-          :class="{ 'bg-gray-600': route.path === '/' }"
-          data-tooltip="My Reservations"
-        >
+          :class="{ 'bg-gray-600': route.path === '/' }" data-tooltip="My Reservations">
           <i class="fa fa-home"></i>
           <span class="tooltip">My Reservations</span>
         </RouterLink>
-        <RouterLink
-          to="/reservations"
+        <RouterLink to="/reservations"
           class="text-white text-3xl p-3 rounded-lg transition-colors duration-200 relative group hover:bg-gray-500"
-          :class="{ 'bg-gray-600': route.path === '/reservations' }"
-          data-tooltip="Reservations"
-        >
+          :class="{ 'bg-gray-600': route.path === '/reservations' }" data-tooltip="Reservations">
           <i class="fa fa-calendar"></i>
           <span class="tooltip">Reservations</span>
         </RouterLink>
-        <RouterLink
-          to="/room"
+        <RouterLink to="/room"
           class="text-white text-3xl p-3 rounded-lg transition-colors duration-200 relative group hover:bg-gray-500"
-          :class="{ 'bg-gray-600': route.path === '/room' }"
-          data-tooltip="Rooms"
-        >
+          :class="{ 'bg-gray-600': route.path === '/room' }" data-tooltip="Rooms">
           <i class="fa fa-building-o"></i>
           <span class="tooltip">Rooms</span>
         </RouterLink>

@@ -3,7 +3,7 @@ const Reservation = require('./reservation.model');
 const getReservations = async (req, res) => {
     const { query } = req;
 
-    let filter = {status:"active"};
+    let filter = { status: "active" };
     // Add query-based filtering logic here if needed
 
     try {
@@ -34,7 +34,7 @@ const getNonValidReservations = async (req, res) => {
             // Reservation starts within the range
             { start_time: { $gte: start_time, $lte: end_time } },
             // Reservation ends within the range
-            { end_time: { $gte: start_time, $lte: end_time } },
+            { end_time: { $gt: start_time, $lte: end_time } },
             // Reservation overlaps the range
             {
                 start_time: { $lte: start_time },
@@ -90,7 +90,7 @@ const createReservation = async (req, res) => {
 const cancelReservation = async (req, res) => {
     const { body } = req;
     const id = body.id;
-    const status = {status: "cancelled"}
+    const status = { status: "cancelled" }
     console.log(body);
     // use the ID and then put the status to cancelled
 
