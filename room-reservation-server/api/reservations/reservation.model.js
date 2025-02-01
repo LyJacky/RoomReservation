@@ -17,6 +17,6 @@ const ReservationSchema = new mongoose.Schema(
     },
 );
 
-const Reservation = mongoose.model('Reservation', ReservationSchema);
+const Reservation = mongoose.model('Reservations', ReservationSchema);
 
 module.exports = Reservation;

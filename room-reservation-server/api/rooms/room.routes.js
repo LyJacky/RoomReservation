@@ -8,5 +8,7 @@ router.get('/', controller.getRooms);
 router.post('/', controller.createRoom);
 // PUT /rooms/:id
 router.put('/:id', controller.editRoom);
+// DELETE /rooms/:id
+router.delete('/:id', controller.deleteRoom);
 
 module.exports = router;

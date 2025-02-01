@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
- 
+
 const RoomSchema = new mongoose.Schema(
     {
         name: {
@@ -23,22 +23,21 @@ const RoomSchema = new mongoose.Schema(
     //     toObject: { virtuals: true },
     //     toJSON: { virtuals: true }
     // }
-); 
+);
 
 // Define a virtual property to retrieve bookmarks associated with the snippet
-RoomSchema.virtual('reservation', {
-    ref: 'Reservation',
+RoomSchema.virtual('Reservation', {
+    ref: 'reservations',
     localField: '_id',
     foreignField: 'room_id'
 });
 
-// .post to delete associated bookmarks when a snippet is deleted
-// doc argument refers to the deleted snippet document
+// .post to delete associated reservations when a room is deleted
 RoomSchema.post('findOneAndDelete', async function (doc) {
-    const Reservation = mongoose.model('reservation');
+    const Reservation = mongoose.model('Reservations');
 
     try {
-        // delete all bookmarks associated with the removed snippet
+        // delete all reservations associated with the removed room
         await Reservation.deleteMany({ room_id: doc._id });
     } catch (error) {
         console.log(error);
@@ -48,5 +47,5 @@ RoomSchema.post('findOneAndDelete', async function (doc) {
 
 
 const Room = mongoose.model('Rooms', RoomSchema);
- 
+
 module.exports = Room;

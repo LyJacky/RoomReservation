@@ -12,7 +12,7 @@
             <label class="block text-lg font-medium text-gray-700 mb-2">Select Date</label>
             <input type="date" v-model="selectedDate"
               class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              @input="exitDisplay" />
+              @input="exitDisplay" :min="new Date().toISOString().split('T')[0]" />
           </div>
 
           <!-- Start Time Selection -->
@@ -54,24 +54,28 @@
       </div>
     </div>
 
-    <!-- Duration & Filter Button Adjacent -->
-    <div v-if="startTime && endTime" class="mt-4 flex items-center space-x-4 text-lg text-gray-700 leading-relaxed">
-      <!-- Filter Button -->
-      <button @click="openFilterModal"
-        class="flex items-center space-x-2 text-gray-600 hover:text-blue-600 transition-all">
-        <i class="fas fa-filter"></i>
-        <span>Filter</span>
-      </button>
-      <!-- Duration Display -->
-      <span>Duration: {{ duration }} minutes</span>
+    <!-- Duration Display -->
+    <div v-if="startTime && endTime" class="mt-4 text-lg text-gray-700">
+      Duration: {{ duration }} minutes
     </div>
 
-    <!-- Search Button -->
-    <div v-if="startTime && endTime && selectedDate" class="mt-6">
-      <button @click="searchAvailableRooms"
-        class="bg-blue-600 text-white px-8 py-3 rounded-lg transition-all transform hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500">
-        Search Available Rooms
-      </button>
+    <!-- Minimum Capacity and Search Button -->
+    <div v-if="startTime && endTime && selectedDate" class="mt-4 flex items-end space-x-4">
+      <!-- Minimum Capacity Input -->
+      <div class="w-64"> <!-- Adjust width as needed -->
+        <label class="block text-lg font-medium text-gray-700 mb-2">Minimum Capacity</label>
+        <input type="number" v-model="minCapacity"
+          class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+          min="1" placeholder="Enter minimum capacity" />
+      </div>
+
+      <!-- Search Button -->
+      <div>
+        <button @click="searchAvailableRooms"
+          class="bg-blue-600 text-white px-8 py-3 rounded-lg transition-all transform hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Search Available Rooms
+        </button>
+      </div>
     </div>
 
     <!-- Available Rooms -->
@@ -126,6 +130,7 @@ const unavailableRooms = ref([]);
 const activeTab = ref('available');
 const showModal = ref(false);
 const modal = ref(null);
+const minCapacity = ref(null)
 
 const duration = computed(() => {
   if (startTime.value && endTime.value && selectedDate.value) {
@@ -175,6 +180,7 @@ watch([startTime, selectedDate], updateEndTimeOptions);
 const selectEndTime = (time) => {
   endTime.value = time;
   showModal.value = false;
+  exitDisplay();
 };
 
 const searchAvailableRooms = async () => {
@@ -182,13 +188,18 @@ const searchAvailableRooms = async () => {
     const startDateTime = new Date(`${selectedDate.value}T${startTime.value}:00Z`).toISOString();
     const endDateTime = new Date(endTime.value).toISOString();
 
-    const roomsResponse = await axios.get('http://localhost:8080/room');
+    const roomsResponse = await axios.get('http://localhost:8080/room', {
+      params: {
+        capacity: minCapacity.value
+      }
+    });
     const rooms = roomsResponse.data;
 
     const reservationsResponse = await axios.get('http://localhost:8080/reservation/nonValid', {
       params: {
         start_time: startDateTime,
         end_time: endDateTime,
+
       },
     });
 

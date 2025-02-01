@@ -2,19 +2,20 @@
     <div class="border rounded-lg p-4 flex justify-between items-center bg-white shadow">
         <div>
             <!-- Reserved by -->
-            <h3 class="font-bold">Reserved by: {{ reservation.created_by_name }}</h3>
+            <h3 class="font-semibold text-xl">Reserved by: {{ reservation.created_by_name }}</h3>
 
             <!-- Room Name -->
-            <h3 class="font-bold">Room Name: {{ reservation.room_id?.name }}</h3>
+            <h3 class="font-semibold text-xl">Room Name: {{ reservation.room_id?.name }}</h3>
 
             <!-- Start and End Time -->
-            <p class="text-gray-600">
+            <p class="text-gray-600 text-sm">
                 {{ formatDate(reservation.start_time) }} at {{ formatTime(reservation.start_time) }} -
                 {{ formatDate(reservation.end_time) }} at {{ formatTime(reservation.end_time) }}
             </p>
 
             <!-- Duration -->
-            <p>Duration: {{ reservation.duration }} minutes</p>
+            <i class="text-gray-600 fa fa-hourglass-half"></i>
+            <span class="text-gray-600 ml-0.5 text-sm"> {{ reservation.duration }} minutes</span>
         </div>
 
         <!-- Cancel Button -->

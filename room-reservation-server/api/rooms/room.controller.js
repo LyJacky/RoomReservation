@@ -2,15 +2,11 @@ const Room = require('./room.model');
 
 const getRooms = async (req, res) => {
     const { query } = req;
-    console.log('I WENT INSIDE HERE')
-    console.log(query)
+    const capacity = query.capacity;
     let filter = {};
-    // if (language) {
-    //     filter = {
-    //         programming_language: { $regex: language, $options: 'i' }
-    //     };
-    // }
-
+    if (capacity) {
+        filter = { ...filter, capacity: { $gte: capacity } }
+    }
     try {
         const rooms = await Room.find(filter);
         console.log(Room)
@@ -40,21 +36,17 @@ const createRoom = async (req, res) => {
 // need to also delete all associated reservations to the rooms
 // if we add user we need to delete all the users associated to that room as well, as well as their reservations
 const deleteRoom = async (req, res) => {
-    const { query } = req;
-    console.log('I WENT INSIDE HERE')
-    console.log(query)
-    let filter = {};
-    // if (language) {
-    //     filter = {
-    //         programming_language: { $regex: language, $options: 'i' }
-    //     };
-    // }
+    const { params } = req;
+    const id = params.id;
 
     try {
-        const rooms = await Room.find(filter);
-        console.log(Room)
-        console.log(rooms)
-        res.json(rooms);
+        const room = await Room.findOneAndDelete({ _id: id });
+
+        if (room) {
+            res.json({ message: 'success', room: id });
+        } else {
+            res.status(404).json({ error: `No room found by id: ${id}` });
+        }
     } catch (error) {
         res.status(500).json({ error: error.toString() });
     }
@@ -66,7 +58,7 @@ const editRoom = async (req, res) => {
     console.log(body.updated_at)
     const id = params.id;
     console.log(body);
-    console.log("THE ID IS ",id)
+    console.log("THE ID IS ", id)
 
     try {
         const room = await Room.findOneAndUpdate({ _id: id }, body, {
@@ -91,6 +83,6 @@ const editRoom = async (req, res) => {
 module.exports = {
     getRooms,
     createRoom,
-    editRoom
+    editRoom,
+    deleteRoom
 };
- 

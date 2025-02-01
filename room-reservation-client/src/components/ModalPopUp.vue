@@ -15,7 +15,7 @@
                 </div>
                 <div class="mb-4">
                     <label class="block font-medium mb-1">Capacity</label>
-                    <input v-model="roomData.capacity" type="number" class="w-full border rounded px-3 py-2"
+                    <input v-model="roomData.capacity" type="number" class="w-full border rounded px-3 py-2 " min="1"
                         placeholder="Enter capacity" />
                 </div>
 

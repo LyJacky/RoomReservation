@@ -2,7 +2,6 @@ const Reservation = require('./reservation.model');
 
 const getReservations = async (req, res) => {
     const { query } = req;
-
     let filter = { status: "active" };
     // Add query-based filtering logic here if needed
 
@@ -28,7 +27,7 @@ const getNonValidReservations = async (req, res) => {
     console.log(start_time)
     console.log(end_time)
 
-    const filter = {
+    let filter = {
         status: "active",
         $or: [
             // Reservation starts within the range

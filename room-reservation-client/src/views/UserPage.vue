@@ -81,6 +81,7 @@ const fetchReservations = async () => {
         duration,
       };
     });
+    console.log(allReservations.value)
   } catch (err) {
     console.error('Failed to load reservations:', err);
   } finally {
@@ -153,7 +154,3 @@ onMounted(() => {
   fetchReservations();
 });
 </script>
-
-<style scoped>
-/* Add any custom styles here */
-</style>
