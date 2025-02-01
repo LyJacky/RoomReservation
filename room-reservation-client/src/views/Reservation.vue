@@ -39,7 +39,8 @@
               class="absolute z-10 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg"
               :style="{ width: modalWidth, right: 0 }">
               <div class="p-3">
-                <div class="grid grid-cols-4 gap-2">
+                <!-- Responsive Grid for End Time Options -->
+                <div class="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-2">
                   <button v-for="time in endTimeOptions" :key="time.value" @click="selectEndTime(time.value)"
                     class="p-2 border border-gray-300 rounded-lg hover:bg-blue-100 transition-all text-sm">
                     <div>{{ formatTime(new Date(time.value)) }}</div>
@@ -181,13 +182,6 @@ const searchAvailableRooms = async () => {
     const startDateTime = new Date(`${selectedDate.value}T${startTime.value}:00Z`).toISOString();
     const endDateTime = new Date(endTime.value).toISOString();
 
-    console.log("NSJFJKSDNFKJDSNFKDJNFSKJNFSDKJFNDS");
-    console.log(selectedDate.value);
-    console.log(startTime.value);
-    console.log(endTime.value);
-    console.log(startDateTime);
-    console.log(endDateTime);
-
     const roomsResponse = await axios.get('http://localhost:8080/room');
     const rooms = roomsResponse.data;
 
@@ -241,7 +235,7 @@ const handleClickOutside = (event) => {
   }
 };
 
-const modalWidth = "500px"; // Adjust width based on your layout
+const modalWidth = "350px"; // Adjust width based on your layout
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
