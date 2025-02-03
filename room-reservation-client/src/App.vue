@@ -3,6 +3,8 @@ import { RouterView } from 'vue-router';
 import 'font-awesome/css/font-awesome.min.css';
 import { ref } from 'vue';
 import Sidebar from './components/SideBarApp.vue'; // Import the Sidebar component
+// import { Toast } from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
 
 const isSidebarOpen = ref(false);
 
@@ -27,26 +29,21 @@ const toggleSidebar = () => {
     <!-- Main Content -->
     <div class="flex flex-1 pt-16"> <!-- Add padding-top to account for the fixed navbar -->
       <!-- Sidebar -->
-      <Sidebar :isSidebarOpen="isSidebarOpen" @toggle="toggleSidebar" class = "z-50" />
+      <Sidebar :isSidebarOpen="isSidebarOpen" @toggle="toggleSidebar" class="z-50" />
 
       <!-- Sidebar Toggle Button -->
-      <button
-        @click="toggleSidebar"
-        :class="[
-          'fixed top-4 p-2 bg-gray-800 text-white rounded-lg z-50 transition-all duration-300 ease-in-out z-50',
-          isSidebarOpen ? 'left-64' : 'left-4', // Adjust position based on sidebar state
-        ]"
-      >
+      <button @click="toggleSidebar" :class="[
+        'fixed top-4 p-2 bg-gray-800 text-white rounded-lg z-50 transition-all duration-300 ease-in-out z-50',
+        isSidebarOpen ? 'left-64' : 'left-4', // Adjust position based on sidebar state
+      ]">
         <i class="fa fa-bars"></i>
       </button>
 
       <!-- Router View -->
-      <main
-        :class="[
-          'flex-1 p-6 transition-all duration-300 ease-in-out',
-          isSidebarOpen ? 'ml-64' : 'ml-16', // Adjust margin based on sidebar width
-        ]"
-      >
+      <main :class="[
+        'flex-1 p-6 transition-all duration-300 ease-in-out',
+        isSidebarOpen ? 'ml-64' : 'ml-16', // Adjust margin based on sidebar width
+      ]">
         <RouterView />
       </main>
     </div>

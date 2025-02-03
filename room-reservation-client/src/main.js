@@ -1,6 +1,8 @@
 import './assets/style.css'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 import PrimeVue from 'primevue/config';
 import Button from 'primevue/button';
@@ -16,5 +18,10 @@ app.component('Sidebar', Drawer);
 app.component('Button', Button);
 app.use(createPinia())
 app.use(router)
+const options = {
+    // You can set your default options here
+};
+
+app.use(Toast, options);
 
 app.mount('#app')
