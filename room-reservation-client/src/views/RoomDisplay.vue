@@ -34,15 +34,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import axios from 'axios';
+import { ref, computed } from 'vue';
 import { cloneDeep } from 'lodash';
 import ModalPopUp from '../components/ModalPopUp.vue';
 import EllipsisButton from '../components/EllipsisButton.vue';
 import { useToast } from 'vue-toastification';
+import { useRoomStore } from '@/stores/roomStore';
+import { useReservationStore } from '@/stores/ReservationStore';
+
+const reservationStore = useReservationStore()
+const roomStore = useRoomStore();
+const rooms = computed(() => roomStore.rooms);
 
 const toast = useToast();
-const rooms = ref([]);
 const isModalOpen = ref(false);
 const editableRoom = ref({
   _id: null,
@@ -72,20 +76,15 @@ const closeModal = () => {
 
 const updateRoom = async (updatedRoom) => {
   try {
-    const roomId = updatedRoom._id;
-    console.log(updatedRoom)
-    // console.log(updateRoom.value)
-    // console.log(updateRoom.value._id)
-    // console.log(updateRoom._id)
-    // console.log(updateRoom.id)
-    await axios.put(`http://localhost:8080/room/${roomId}`, updatedRoom);
-    fetchRooms();
+    // Use the store's method to update
+    await roomStore.editRoom(updatedRoom._id, updatedRoom);
     toast.success('Room updated successfully!');
     closeModal();
   } catch (err) {
     if (err.response && err.response.status === 500) {
       toast.error(`There already exists a room with the name ${updatedRoom.name}. Please pick another name for that room.`);
     } else {
+      console.log(err)
       toast.error('An unexpected error occurred.');
     }
   }
@@ -93,14 +92,18 @@ const updateRoom = async (updatedRoom) => {
 
 const createRoom = async (newRoom) => {
   try {
-    await axios.post('http://localhost:8080/room', newRoom);
+    await roomStore.addRoom(newRoom);
     toast.success('Room created successfully!');
-    fetchRooms();
     closeModal();
-  } catch (err) {
-    if (err.response && err.response.status === 500) {
+  } catch (storeError) {
+    console.log("STORE ERROR:", storeError);
+
+    // Check if it's a duplicate name error
+    if (storeError.response && storeError.response.status === 500) {
+      console.log("DUPLICATE NAME ERROR");
       toast.error(`There already exists a room with the name ${newRoom.name}. Please pick another name for that room.`);
     } else {
+      console.log("OTHER ERROR");
       toast.error('An unexpected error occurred.');
     }
   }
@@ -120,9 +123,9 @@ const openCreateModal = () => {
 
 const deleteRoom = async (roomId) => {
   try {
-    await axios.delete(`http://localhost:8080/room/${roomId}`);
-    toast.success('Room deleted successfully!');
-    fetchRooms();
+    await roomStore.removeRoom(roomId);
+    await reservationStore.fetchAllReservations();
+    toast.success('Room deleted successfully along with its corresponding reservations!');
   } catch (err) {
     console.error('Failed to delete room:', err);
   }
@@ -135,16 +138,4 @@ const handleEllipsisOption = (room, option) => {
     deleteRoom(room._id);
   }
 };
-
-const fetchRooms = async () => {
-  try {
-    const roomsResponse = await axios.get('http://localhost:8080/room');
-    console.log(roomsResponse.data)
-    rooms.value = roomsResponse.data;
-  } catch (err) {
-    console.error('Failed to load rooms:', err);
-  }
-};
-
-onMounted(fetchRooms);
 </script>

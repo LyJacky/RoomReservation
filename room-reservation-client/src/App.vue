@@ -1,16 +1,48 @@
 <script setup>
 import { RouterView } from 'vue-router';
 import 'font-awesome/css/font-awesome.min.css';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import Sidebar from './components/SideBarApp.vue'; // Import the Sidebar component
-// import { Toast } from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
+import { useRoomStore } from './stores/roomStore'; // Import the room store
+import { useReservationStore } from './stores/ReservationStore'
 
 const isSidebarOpen = ref(false);
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value;
 };
+
+// Initialize store
+const roomStore = useRoomStore(); // Access the room store
+const reservationStore = useReservationStore();
+
+// Fetch rooms when the app is mounted
+const fetchRooms = async () => {
+  try {
+    console.log("Fetching rooms...");
+    await roomStore.fetchRooms(); // Call fetchRooms from Pinia store
+    console.log("Rooms fetched:", roomStore.rooms);
+  } catch (error) {
+    console.error('Failed to fetch rooms:', error);
+  }
+};
+// Fetch rooms when the app is mounted
+const fetchAllReservations = async () => {
+  try {
+    console.log("Fetching rooms...");
+    await reservationStore.fetchAllReservations(); // Call fetchRooms from Pinia store
+    console.log("Rooms fetched:", reservationStore.reservations);
+  } catch (error) {
+    console.error('Failed to fetch rooms:', error);
+  }
+};
+// Fetch rooms on component mount
+onMounted(async () => {
+  await fetchRooms(); // Wait for rooms to be fetched
+  await fetchAllReservations();
+});
+
 </script>
 
 <template>
@@ -49,7 +81,3 @@ const toggleSidebar = () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Optional: Add custom styles here */
-</style>

@@ -43,7 +43,7 @@
                 <div class="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-2">
                   <button v-for="time in endTimeOptions" :key="time.value" @click="selectEndTime(time.value)"
                     class="p-2 border border-gray-300 rounded-lg hover:bg-blue-100 transition-all text-sm">
-                    <div>{{ formatTime(new Date(time.value)) }}</div>
+                    <div>{{ formatTime((time.value)) }}</div>
                     <div class="text-xs text-gray-500">{{ time.duration }}</div>
                   </button>
                 </div>
@@ -117,9 +117,22 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
-import axios from 'axios';
 import RoomInfo from '../components/RoomInfo.vue';
+import { useRoomStore } from '@/stores/roomStore';
+import { useReservationStore } from '@/stores/ReservationStore';
+import { fetchNonValidReservations } from '@/services/ReservationServices';
+import { useToast } from 'vue-toastification';
+import { formatTime } from '../services/TimeFormatService'
 
+
+// Pinia Stores
+const roomStore = useRoomStore();
+const reservationStore = useReservationStore();
+
+// Toast
+const toast = useToast();
+
+// Refs
 const selectedDate = ref(null);
 const startTime = ref(null);
 const endTime = ref(null);
@@ -130,8 +143,9 @@ const unavailableRooms = ref([]);
 const activeTab = ref('available');
 const showModal = ref(false);
 const modal = ref(null);
-const minCapacity = ref(null)
+const minCapacity = ref(null);
 
+// Computed
 const duration = computed(() => {
   if (startTime.value && endTime.value && selectedDate.value) {
     const startDateTime = new Date(`${selectedDate.value}T${startTime.value}:00Z`);
@@ -146,36 +160,26 @@ const duration = computed(() => {
   return 0;
 });
 
-const formatTime = (date) => {
-  return date.toLocaleTimeString('en-US', {
-    hour: 'numeric',
-    minute: '2-digit',
-    hour12: true,
-    timeZone: 'UTC', // Ensure the time is formatted in UTC
-  });
-};
+
 
 const updateEndTimeOptions = () => {
   if (!startTime.value || !selectedDate.value) return;
 
-  const start = new Date(`${selectedDate.value}T${startTime.value}:00Z`); // Ensure UTC
+  const start = new Date(`${selectedDate.value}T${startTime.value}:00Z`);
   endTimeOptions.value = [];
   endTime.value = null;
 
-  // 300 minutes = 5 hours
   for (let i = 15; i <= 300; i += 15) {
     const newTime = new Date(start);
     newTime.setMinutes(newTime.getMinutes() + i);
     const duration = i < 60 ? `${i}m` : `${Math.floor(i / 60)}h ${i % 60}m`;
     endTimeOptions.value.push({
-      value: newTime.toISOString(), // Ensure UTC
-      label: formatTime(newTime), // Format in UTC
+      value: newTime.toISOString(),
+      label: formatTime(newTime),
       duration: duration,
     });
   }
 };
-
-watch([startTime, selectedDate], updateEndTimeOptions);
 
 const selectEndTime = (time) => {
   endTime.value = time;
@@ -188,30 +192,19 @@ const searchAvailableRooms = async () => {
     const startDateTime = new Date(`${selectedDate.value}T${startTime.value}:00Z`).toISOString();
     const endDateTime = new Date(endTime.value).toISOString();
 
-    const roomsResponse = await axios.get('http://localhost:8080/room', {
-      params: {
-        capacity: minCapacity.value
-      }
-    });
-    const rooms = roomsResponse.data;
+    // Fetch rooms with minimum capacity using the room store getter
+    const rooms = roomStore.getRoomsWithCapacity(minCapacity.value);
 
-    const reservationsResponse = await axios.get('http://localhost:8080/reservation/nonValid', {
-      params: {
-        start_time: startDateTime,
-        end_time: endDateTime,
-
-      },
-    });
-
-    const reservations = reservationsResponse.data;
+    // Fetch conflicting reservations
+    const reservations = await fetchNonValidReservations(startDateTime, endDateTime);
+    console.log(reservations)
     const reservationIds = new Set(reservations.map(reservation => reservation._id.toString()));
 
-    const updatedRooms = rooms.filter(room => !reservationIds.has(room._id.toString()));
-    const updatedUnavailableRooms = rooms.filter(room => reservationIds.has(room._id.toString()));
+    // Filter available and unavailable rooms
+    availableRooms.value = rooms.filter(room => !reservationIds.has(room._id.toString()));
+    unavailableRooms.value = rooms.filter(room => reservationIds.has(room._id.toString()));
 
-    availableRooms.value = updatedRooms;
     showAvailableRooms.value = true;
-    unavailableRooms.value = updatedUnavailableRooms;
   } catch (error) {
     console.error('Search failed:', error);
   }
@@ -226,14 +219,15 @@ const reserveRoom = async (room) => {
     const startDateTime = new Date(`${selectedDate.value}T${startTime.value}:00Z`).toISOString();
     const endDateTime = new Date(endTime.value).toISOString();
 
-    await axios.post('http://localhost:8080/reservation', {
+    await reservationStore.createReservation({
       room_id: room._id,
       start_time: startDateTime,
       end_time: endDateTime,
       created_by_name: "Jacky",
-      status: "active"
+      status: "active",
     });
-    await searchAvailableRooms();
+    toast.success(`Successfully reserved room: , ${room.name}`)
+    await searchAvailableRooms(); // Refresh the list after reservation
   } catch (error) {
     console.error('Reservation failed:', error);
   }
@@ -246,7 +240,7 @@ const handleClickOutside = (event) => {
   }
 };
 
-const modalWidth = "350px"; // Adjust width based on your layout
+const modalWidth = "350px";
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside);
@@ -255,4 +249,6 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
+
+watch([startTime, selectedDate], updateEndTimeOptions);
 </script>

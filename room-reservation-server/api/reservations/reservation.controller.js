@@ -24,8 +24,6 @@ const getNonValidReservations = async (req, res) => {
     if (!start_time || !end_time) {
         return res.status(400).json({ error: "start_time and end_time are required." });
     }
-    console.log(start_time)
-    console.log(end_time)
 
     let filter = {
         status: "active",
@@ -45,8 +43,6 @@ const getNonValidReservations = async (req, res) => {
     try {
         // Find reservations that match the filter and populate the room_id field
         const reservations = await Reservation.find(filter).populate('room_id');
-        console.log('THE RESERVAITONS OF THJIS ARE')
-        console.log(reservations)
         // Extract unique rooms from the reservations
         const uniqueRooms = [];
         const roomSet = new Set();
@@ -59,8 +55,6 @@ const getNonValidReservations = async (req, res) => {
             }
         });
 
-        // Log and return the unique rooms
-        console.log('Unique Rooms:', uniqueRooms);
         res.json(uniqueRooms);
     } catch (error) {
         console.error('Error fetching unique rooms:', error);
@@ -90,7 +84,6 @@ const cancelReservation = async (req, res) => {
     const { body } = req;
     const id = body.id;
     const status = { status: "cancelled" }
-    console.log(body);
     // use the ID and then put the status to cancelled
 
     try {

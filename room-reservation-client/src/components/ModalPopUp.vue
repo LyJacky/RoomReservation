@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     isOpen: Boolean,
@@ -56,7 +56,7 @@ const emit = defineEmits(['update:room', 'create:room', 'close']);
 
 // Initialize roomData with default values
 const roomData = ref({
-    _id: '',
+    _id: null,
     name: '',
     description: '',
     capacity: 1,
@@ -67,7 +67,7 @@ const roomData = ref({
 // Watch for changes in props.room and update roomData
 watch(() => props.room, (newRoom) => {
     roomData.value = {
-        _id: newRoom._id || '',
+        _id: newRoom._id || null,
         name: newRoom.name || '',
         description: newRoom.description || '',
         capacity: newRoom.capacity || 1,

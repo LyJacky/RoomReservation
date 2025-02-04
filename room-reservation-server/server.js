@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 
-const mongo = require('./mongo');
+const mongo = require('./config/mongo');
 
 const app = express();
 
@@ -22,7 +22,7 @@ const room = require('./api/rooms/room.routes.js');
 
 // mount the resource routes to our express app
 app.use('/reservation', reservation);
-app.use('/room', room); 
+app.use('/room', room);
 
 // start the express server and connect to mongo
 app.listen(PORT, async () => {

@@ -33,8 +33,7 @@ const createRoom = async (req, res) => {
     }
 };
 
-// need to also delete all associated reservations to the rooms
-// if we add user we need to delete all the users associated to that room as well, as well as their reservations
+// Also delete all associated reservations to the rooms
 const deleteRoom = async (req, res) => {
     const { params } = req;
     const id = params.id;
@@ -74,11 +73,7 @@ const editRoom = async (req, res) => {
         res.status(500).json({ error: error.toString() });
     }
 };
-// const checkData = async () => {
-//     const rooms = await Room.find();
-//     console.log('Rooms:', rooms);
-// };
-// checkData();
+
 
 module.exports = {
     getRooms,

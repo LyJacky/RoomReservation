@@ -26,8 +26,7 @@
 </template>
   
 <script setup>
-import { defineProps, defineEmits } from 'vue';
-
+import { formatTime, formatDate } from '../services/TimeFormatService'
 const props = defineProps({
     reservation: {
         type: Object,
@@ -37,21 +36,6 @@ const props = defineProps({
 
 const emit = defineEmits(['cancel']);
 
-const formatDate = (date) => {
-    return new Date(date).toLocaleDateString('en-US', {
-        weekday: 'long',
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-    });
-};
-
-const formatTime = (date) => {
-    return new Date(date).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
 
 const onCancel = () => {
     emit('cancel', props.reservation._id);

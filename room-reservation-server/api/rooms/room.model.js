@@ -19,10 +19,6 @@ const RoomSchema = new mongoose.Schema(
             default: Date.now
         }
     },
-    // { 
-    //     toObject: { virtuals: true },
-    //     toJSON: { virtuals: true }
-    // }
 );
 
 // Define a virtual property to retrieve bookmarks associated with the snippet
@@ -35,7 +31,6 @@ RoomSchema.virtual('Reservation', {
 // .post to delete associated reservations when a room is deleted
 RoomSchema.post('findOneAndDelete', async function (doc) {
     const Reservation = mongoose.model('Reservations');
-
     try {
         // delete all reservations associated with the removed room
         await Reservation.deleteMany({ room_id: doc._id });

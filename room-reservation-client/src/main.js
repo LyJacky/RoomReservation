@@ -12,11 +12,12 @@ import router from './router'
 import { Drawer } from 'primevue';
 
 const app = createApp(App)
+const pinia = createPinia()
 
 app.use(PrimeVue);
 app.component('Sidebar', Drawer);
 app.component('Button', Button);
-app.use(createPinia())
+app.use(pinia)
 app.use(router)
 const options = {
     // You can set your default options here
