@@ -100,20 +100,23 @@
       </div>
       <!-- Available Rooms -->
       <div v-if="activeTab === 'available'" class="mt-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div v-if="availableRooms.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div v-for="room in availableRooms" :key="room.id">
             <RoomInfo :room="room" :available="true" :selectedRooms="selectedRooms" @reserve="reserveRoom"
               @remove="removeRoom" class="mb-4" />
           </div>
         </div>
+        <p v-else class="text-gray-500 text-lg text-center">No available rooms found.</p>
       </div>
+
       <!-- Unavailable Rooms -->
       <div v-if="activeTab === 'unavailable'" class="mt-4">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div v-if="unavailableRooms.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div v-for="room in unavailableRooms" :key="room.id">
             <RoomInfo :room="room" :available="false" :selectedRooms="selectedRooms" class="mb-4" />
           </div>
         </div>
+        <p v-else class="text-gray-500 text-lg text-center">No unavailable rooms found.</p>
       </div>
     </div>
   </div>
@@ -123,10 +126,10 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { useDateSelectionStore } from '../stores/DateSelectionStore';
 import RoomInfo from '../components/RoomInfo.vue';
-import { fetchNonValidRooms, createReservation } from '../services/ReservationServices';
+import { fetchNonValidRooms, createReservation } from '../services/ReservationService';
 import { useToast } from 'vue-toastification';
 import { formatTime } from '../services/TimeFormatService';
-import { getRooms } from '../services/RoomServices';
+import { getRooms } from '../services/RoomService';
 
 // Initialize store
 const dateSelectionStore = useDateSelectionStore();
@@ -168,8 +171,14 @@ const endTimeOptions = computed(() => {
 watch([() => dateSelectionStore.selectedDate, () => dateSelectionStore.startTime, () => dateSelectionStore.endTime], () => {
   // If any of the date or time values change, hide the available rooms
   showAvailableRooms.value = false;
+  selectedRooms.value = []
 }
 );
+watch([() => minCapacity.value], () => {
+  // When capacity changes, hide the available rooms and clear selected rooms
+  showAvailableRooms.value = false;
+  selectedRooms.value = [];
+});
 
 
 // Computed property for duration
@@ -197,14 +206,20 @@ const searchAvailableRooms = async () => {
   try {
     const startDateTime = new Date(`${dateSelectionStore.selectedDate}T${dateSelectionStore.startTime}:00Z`).toISOString();
     const endDateTime = new Date(dateSelectionStore.endTime).toISOString();
+    const allRooms = await getRooms();
+    // gets a subset of rooms of all rooms
     const rooms = await getRooms(minCapacity.value);
+    // find all rooms that conflict with that time
     const reservations = await fetchNonValidRooms(startDateTime, endDateTime);
     const reservationIds = new Set(reservations.map(reservation => reservation._id.toString()));
 
     availableRooms.value = rooms.filter(room => !reservationIds.has(room._id.toString()));
-    unavailableRooms.value = rooms.filter(room => reservationIds.has(room._id.toString()));
+    const roomWithNotValidCapacity = allRooms.filter((room) => !rooms.some((r) => r._id === room._id));
+    const unavailRoomConcat = rooms.filter(room => reservationIds.has(room._id.toString())).concat(roomWithNotValidCapacity);
+    unavailableRooms.value = unavailRoomConcat;
 
     showAvailableRooms.value = true;
+    selectedRooms.value = []
   } catch (error) {
     console.error('Search failed:', error);
   }
@@ -239,6 +254,7 @@ const submitReservations = async () => {
     }
 
     selectedRooms.value = [];
+    minCapacity.value = null;
     await searchAvailableRooms();
     dateSelectionStore.clearState();
   } catch (error) {

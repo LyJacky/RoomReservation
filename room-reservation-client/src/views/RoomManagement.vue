@@ -35,7 +35,7 @@ import { cloneDeep } from 'lodash';
 import ModalPopUp from '../components/ModalPopUp.vue';
 import EllipsisButton from '../components/EllipsisButton.vue';
 import { useToast } from 'vue-toastification';
-import { getRooms, createRoom, updateRoom, deleteRoomById } from '../services/RoomServices';
+import { getRooms, createRoom, updateRoom, deleteRoomById } from '../services/RoomService';
 
 const rooms = ref([]);
 const toast = useToast();

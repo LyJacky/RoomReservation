@@ -47,7 +47,7 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import ReservationInfo from '../components/ReservationInfo.vue';
 import { useToast } from 'vue-toastification';
-import { fetchAllReservations, cancelReservationById } from '../services/ReservationServices';
+import { fetchAllReservations, cancelReservationById } from '../services/ReservationService';
 
 const toast = useToast();
 const router = useRouter();

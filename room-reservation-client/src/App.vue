@@ -19,7 +19,7 @@
 
       <!-- Sidebar Toggle Button -->
       <button @click="toggleSidebar" :class="[
-        'fixed top-4 p-2 bg-gray-800 text-white rounded-lg z-50 transition-all duration-300 ease-in-out z-50',
+        'fixed top-4 p-2 bg-gray-800 text-white rounded-lg z-50 transition-all duration-300 ease-in-out hover:bg-gray-700',
         isSidebarOpen ? 'left-64' : 'left-4',
       ]">
         <i class="fa fa-bars"></i>

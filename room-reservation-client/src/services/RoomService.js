@@ -23,7 +23,6 @@ export const createRoom = async (roomData) => {
     }
 };
 
-// RoomServices.js
 export const updateRoom = async (roomId, roomData) => {
     try {
         const response = await axios.put(`${API_BASE_URL}/room/${roomId}`, roomData);

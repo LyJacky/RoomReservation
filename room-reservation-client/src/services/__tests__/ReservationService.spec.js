@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { fetchAllReservations, createReservation, cancelReservationById } from '../ReservationServices'; // Adjust path as needed
+import { fetchAllReservations, createReservation, cancelReservationById } from '../ReservationService'; // Adjust path as needed
 import config from '../../config.json';
 
 const API_BASE_URL = config.API_BASE_URL;

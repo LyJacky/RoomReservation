@@ -20,13 +20,13 @@ const ReservationSchema = new mongoose.Schema(
         },
         room_id: { // This directly references a single Room document
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Rooms' // Reference the 'Room' collection
+            ref: 'Room' // Reference the 'Room' collection
         },
         created_by_name: String,
     },
 );
 
-const Reservation = mongoose.model('Reservations', ReservationSchema);
+const Reservation = mongoose.model('Reservation', ReservationSchema);
 
 
 module.exports = { Reservation, ReservationType };

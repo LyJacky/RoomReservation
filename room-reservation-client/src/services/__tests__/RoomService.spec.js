@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { getRooms, createRoom, updateRoom, deleteRoomById } from '../RoomServices'; // Adjust path as needed
+import { getRooms, createRoom, updateRoom, deleteRoomById } from '../RoomService'; // Adjust path as needed
 import config from '../../config.json';
 
 const API_BASE_URL = config.API_BASE_URL;
