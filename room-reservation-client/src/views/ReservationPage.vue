@@ -212,16 +212,17 @@ const searchAvailableRooms = async () => {
   try {
     const startDateTime = new Date(`${dateSelectionStore.selectedDate}T${dateSelectionStore.startTime}:00Z`).toISOString();
     const endDateTime = new Date(dateSelectionStore.endTime).toISOString();
+    // getting all rooms and finding all rooms with valid and non valid capacity
     const allRooms = await getRooms();
-    // gets a subset of rooms of all rooms
-    const rooms = await getRooms(minCapacity.value);
+    const roomWithNonValidCapacity = allRooms.filter(room => room.capacity < minCapacity.value);
+    const roomWithValidCapacity = allRooms.filter(room => room.capacity >= minCapacity.value);
     // find all rooms that conflict with that time
-    const reservations = await fetchNonValidRooms(startDateTime, endDateTime);
-    const reservationIds = new Set(reservations.map(reservation => reservation._id.toString()));
+    const notValidRooms = await fetchNonValidRooms(startDateTime, endDateTime);
+    const notValidroomIds = new Set(notValidRooms.map(room => room._id.toString()));
 
-    availableRooms.value = rooms.filter(room => !reservationIds.has(room._id.toString()));
-    const roomWithNotValidCapacity = allRooms.filter((room) => !rooms.some((r) => r._id === room._id));
-    const unavailRoomConcat = rooms.filter(room => reservationIds.has(room._id.toString())).concat(roomWithNotValidCapacity);
+    availableRooms.value = roomWithValidCapacity.filter(room => !notValidroomIds.has(room._id.toString()));
+
+    const unavailRoomConcat = roomWithValidCapacity.filter(room => notValidroomIds.has(room._id.toString())).concat(roomWithNonValidCapacity);
     unavailableRooms.value = unavailRoomConcat;
 
     showAvailableRooms.value = true;
