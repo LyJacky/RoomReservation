@@ -5,11 +5,11 @@ RoomReservation is a full-stack application for managing room reservations. For 
 
 ## The Project Consists of:
 
-A Vue 3 frontend located in the room-reservation-client folder.
+* A Vue 3 frontend located in the room-reservation-client folder.
 
-A Node.js backend located in the room-reservation-server folder.
+* A Node.js backend located in the room-reservation-server folder.
 
-A MongoDB Atlas database.
+* A MongoDB Atlas database.
 
 Both the frontend and backend have been dockerized, and their respective Dockerfiles are included in the repository.
 
