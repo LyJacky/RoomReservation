@@ -12,7 +12,7 @@
             <label class="block text-lg font-medium text-gray-700 mb-2">Select Date</label>
             <input type="date" v-model="dateSelectionStore.selectedDate"
               class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-              @input="exitDisplay" :min="new Date().toISOString().split('T')[0]" />
+              @input="exitDisplay" :min="new Date().toLocaleDateString('en-CA')" />
           </div>
 
           <!-- Start Time Selection -->
