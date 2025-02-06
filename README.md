@@ -18,20 +18,20 @@ Both the frontend and backend have been dockerized, and their respective Dockerf
 ## Folder Structure:
 
 ### room-reservation-client
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Components - Contains all reusable components
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Services - Provides services for retrieving data from the backend and sending it to the frontend
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Views - Holds the main pages that users interact with when using the application
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Router - Manages all URL routing within the application
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Stores - Stores all Pinia state management used throughout the project
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Components - Contains all reusable components
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Services - Provides services for retrieving data from the backend and sending it to the frontend
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Views - Holds the main pages that users interact with when using the application
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Router - Manages all URL routing within the application
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Stores - Stores all Pinia state management used throughout the project
 
 
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 ### room-reservation-server
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Controller - Handles all incoming API requests from the client and invokes services to process the requests.
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Services - Handles all logic regarding the request the user has made on the front end
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Repository - Handles primitive calls that will be made to the database ie. search, findByID, deleteById, etc...
-#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Model - Defines the structure and rules for the documents within the MongoDB colletions
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Controller - Handles all incoming API requests from the client and invokes services to process the requests
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Services - Handles all logic regarding the request the user has made on the front end
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Repository - Handles primitive calls that will be made to the database ie. search, findByID, deleteById, etc...
+#### &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Model - Defines the structure and rules for the documents within the MongoDB colletions
 
 ## Installation Steps:
 ### Option 1: Use Dockers to run the application
