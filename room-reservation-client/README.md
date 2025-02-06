@@ -1,6 +1,6 @@
 # room-reservation
 
-This template should help get you started developing with Vue 3 in Vite.
+This is the client for the room reservation application
 
 ## Recommended IDE Setup
 
