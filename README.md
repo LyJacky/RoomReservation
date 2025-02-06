@@ -82,12 +82,12 @@ npm i
 
 #### Step 2: Run the client and the server:
 
-To run the server run this command: 
+##### To run the server run this command: 
 ```console
 npx nodemon server.js
 ```
 
-To run the client run this command: 
+##### To run the client run this command: 
 ```console
 npm run dev
 ```
