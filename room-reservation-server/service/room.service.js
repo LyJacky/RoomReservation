@@ -50,7 +50,8 @@ class RoomService {
                 throw new Error('Error: room not found');
             }
             const verifyRoom = await RoomRepository.search(null, roomData.name)
-            if (verifyRoom.length != 0) {
+            // The database is already going to have unique names, so we will just find 1
+            if (verifyRoom.length == 1) {
                 if (verifyRoom[0]._id.toString() != roomId) {
                     throw new Error('Error: There exists a room with the same name already');
                 }
