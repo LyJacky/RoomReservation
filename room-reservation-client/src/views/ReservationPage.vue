@@ -64,18 +64,24 @@
     <!-- Minimum Capacity and Search Button -->
     <div v-if="dateSelectionStore.startTime && dateSelectionStore.endTime && dateSelectionStore.selectedDate"
       class="mt-4 flex items-end space-x-4">
-      <div class="w-64">
-        <label class="block text-lg font-medium text-gray-700 mb-2">Minimum Capacity</label>
-        <input type="number" v-model="minCapacity"
-          class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-          min="1" placeholder="Enter minimum capacity" />
-      </div>
-      <!-- Button To Search for  Rooms -->
-      <div>
-        <button @click="searchAvailableRooms"
-          class="bg-blue-600 text-white px-8 py-3 rounded-lg transition-all transform hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500">
-          Search Available Rooms
-        </button>
+      <!-- Minimum Capacity and Search Button -->
+      <div v-if="dateSelectionStore.startTime && dateSelectionStore.endTime && dateSelectionStore.selectedDate"
+        class="mt-4 flex items-end space-x-4">
+        <form @submit.prevent="searchAvailableRooms" class="flex items-end space-x-4">
+          <div class="w-64">
+            <label class="block text-lg font-medium text-gray-700 mb-2">Minimum Capacity</label>
+            <input type="number" min="1" required v-model="minCapacity"
+              class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+              placeholder="Enter minimum capacity" />
+          </div>
+          <!-- Button To Search for Rooms -->
+          <div>
+            <button type="submit"
+              class="bg-blue-600 text-white px-8 py-3 rounded-lg transition-all transform hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              Search Available Rooms
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -254,7 +260,7 @@ const submitReservations = async () => {
     }
 
     selectedRooms.value = [];
-    minCapacity.value = null;
+    minCapacity.value = 1;
     await searchAvailableRooms();
     dateSelectionStore.clearState();
   } catch (error) {
@@ -272,6 +278,7 @@ const handleClickOutside = (event) => {
 const modalWidth = "350px";
 
 onMounted(() => {
+  minCapacity.value = 1;
   document.addEventListener('click', handleClickOutside);
 });
 
