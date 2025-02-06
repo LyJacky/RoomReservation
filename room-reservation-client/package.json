@@ -10,8 +10,10 @@
     "test:unit": "vitest"
   },
   "dependencies": {
+    "@primevue/themes": "^4.2.5",
     "@tailwindcss/vite": "^4.0.0",
     "axios": "^1.7.9",
+    "axios-mock-adapter": "^2.1.0",
     "font-awesome": "^4.7.0",
     "lodash": "^4.17.21",
     "pinia": "^2.3.1",

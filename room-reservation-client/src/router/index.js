@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import RoomDisplay from '../views/RoomDisplay.vue'
 import Reservation from '../views/Reservation.vue'
-import UserPage from '../views/UserPage.vue'
+import ReservationDisplay from '../views/ReservationDisplay.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -9,7 +9,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: UserPage,
+      component: ReservationDisplay,
     },
     {
       path: '/room',

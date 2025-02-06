@@ -4,9 +4,9 @@ const API_BASE_URL = config.API_BASE_URL
 
 
 // Fetch non-valid reservations within a given time range
-export const fetchNonValidReservations = async (startDateTime, endDateTime) => {
+export const fetchNonValidRooms = async (startDateTime, endDateTime) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/reservation/nonValid`, {
+        const response = await axios.get(`${API_BASE_URL}/reservation/nonValidRooms`, {
             params: {
                 start_time: startDateTime,
                 end_time: endDateTime,
@@ -42,7 +42,7 @@ export const fetchAllReservations = async () => {
 };
 
 // Cancel a reservation
-export const cancelReservation = async (id) => {
+export const cancelReservationById = async (id) => {
     try {
         const response = await axios.put(`${API_BASE_URL}/reservation/cancelReservation`, {
             id: id,

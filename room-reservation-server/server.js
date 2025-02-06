@@ -17,8 +17,8 @@ app.use(cors(options));
 app.use(express.json());
 
 // require in our resource routes
-const reservation = require('./api/reservations/reservation.routes.js');
-const room = require('./api/rooms/room.routes.js');
+const reservation = require('./controller/reservations/reservation.routes.js');
+const room = require('./controller/rooms/room.routes.js');
 
 // mount the resource routes to our express app
 app.use('/reservation', reservation);

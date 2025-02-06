@@ -1,49 +1,3 @@
-<script setup>
-import { RouterView } from 'vue-router';
-import 'font-awesome/css/font-awesome.min.css';
-import { ref, onMounted } from 'vue';
-import Sidebar from './components/SideBarApp.vue'; // Import the Sidebar component
-import 'vue-toastification/dist/index.css';
-import { useRoomStore } from './stores/roomStore'; // Import the room store
-import { useReservationStore } from './stores/ReservationStore'
-
-const isSidebarOpen = ref(false);
-
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
-};
-
-// Initialize store
-const roomStore = useRoomStore(); // Access the room store
-const reservationStore = useReservationStore();
-
-// Fetch rooms when the app is mounted
-const fetchRooms = async () => {
-  try {
-    console.log("Fetching rooms...");
-    await roomStore.fetchRooms(); // Call fetchRooms from Pinia store
-    console.log("Rooms fetched:", roomStore.rooms);
-  } catch (error) {
-    console.error('Failed to fetch rooms:', error);
-  }
-};
-// Fetch rooms when the app is mounted
-const fetchAllReservations = async () => {
-  try {
-    console.log("Fetching rooms...");
-    await reservationStore.fetchAllReservations(); // Call fetchRooms from Pinia store
-    console.log("Rooms fetched:", reservationStore.reservations);
-  } catch (error) {
-    console.error('Failed to fetch rooms:', error);
-  }
-};
-// Fetch rooms on component mount
-onMounted(async () => {
-  await fetchRooms(); // Wait for rooms to be fetched
-  await fetchAllReservations();
-});
-
-</script>
 
 <template>
   <div class="flex flex-col h-screen">
@@ -59,14 +13,14 @@ onMounted(async () => {
     </nav>
 
     <!-- Main Content -->
-    <div class="flex flex-1 pt-16"> <!-- Add padding-top to account for the fixed navbar -->
+    <div class="flex flex-1 pt-16">
       <!-- Sidebar -->
       <Sidebar :isSidebarOpen="isSidebarOpen" @toggle="toggleSidebar" class="z-50" />
 
       <!-- Sidebar Toggle Button -->
       <button @click="toggleSidebar" :class="[
         'fixed top-4 p-2 bg-gray-800 text-white rounded-lg z-50 transition-all duration-300 ease-in-out z-50',
-        isSidebarOpen ? 'left-64' : 'left-4', // Adjust position based on sidebar state
+        isSidebarOpen ? 'left-64' : 'left-4',
       ]">
         <i class="fa fa-bars"></i>
       </button>
@@ -74,10 +28,42 @@ onMounted(async () => {
       <!-- Router View -->
       <main :class="[
         'flex-1 p-6 transition-all duration-300 ease-in-out',
-        isSidebarOpen ? 'ml-64' : 'ml-16', // Adjust margin based on sidebar width
+        isSidebarOpen ? 'ml-64' : 'ml-16',
       ]">
         <RouterView />
       </main>
     </div>
   </div>
 </template>
+
+<script setup>
+import { RouterView } from 'vue-router';
+import 'font-awesome/css/font-awesome.min.css';
+import { ref, onMounted } from 'vue';
+import Sidebar from './components/SideBarApp.vue';
+import 'vue-toastification/dist/index.css';
+import { useDateSelectionStore } from './stores/DateSelectionStore';
+
+const isSidebarOpen = ref(false);
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+const dateSelectionStore = useDateSelectionStore();
+
+const fetchDateSelections = async () => {
+  try {
+    dateSelectionStore.selectedDate = await localStorage.getItem('selectedDate') || '';
+    dateSelectionStore.startTime = await localStorage.getItem('startTime') || '';
+    dateSelectionStore.endTime = await localStorage.getItem('endTime') || '';
+  } catch (error) {
+    console.error('Failed to fetch date selections:', error);
+  }
+};
+
+onMounted(async () => {
+  await fetchDateSelections();
+});
+
+</script>

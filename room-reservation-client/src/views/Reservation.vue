@@ -10,7 +10,7 @@
           <!-- Date Picker -->
           <div>
             <label class="block text-lg font-medium text-gray-700 mb-2">Select Date</label>
-            <input type="date" v-model="selectedDate"
+            <input type="date" v-model="dateSelectionStore.selectedDate"
               class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               @input="exitDisplay" :min="new Date().toISOString().split('T')[0]" />
           </div>
@@ -18,7 +18,7 @@
           <!-- Start Time Selection -->
           <div>
             <label class="block text-lg font-medium text-gray-700 mb-2">Start Time</label>
-            <input type="time" v-model="startTime"
+            <input type="time" v-model="dateSelectionStore.startTime"
               class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
               @input="exitDisplay" />
           </div>
@@ -26,12 +26,14 @@
           <!-- End Time Selection -->
           <div>
             <label class="block text-lg font-medium text-gray-700 mb-2">End Time</label>
-            <button @click.stop="showModal = !showModal" :disabled="!startTime || !selectedDate" :class="{
-              'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300': !startTime || !selectedDate,
-              'bg-white text-black': startTime && selectedDate
-            }"
+            <button @click.stop="showModal = !showModal"
+              :disabled="!dateSelectionStore.startTime || !dateSelectionStore.selectedDate" :class="{
+                'bg-gray-200 text-gray-500 cursor-not-allowed border-gray-300': !dateSelectionStore.startTime || !dateSelectionStore.selectedDate,
+                'bg-white text-black': dateSelectionStore.startTime && dateSelectionStore.selectedDate
+              }"
               class="w-full p-3 border-2 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-left">
-              {{ endTime ? formatTime(new Date(endTime)) : 'Select End Time' }}
+              {{ dateSelectionStore.endTime ? formatTime(new Date(dateSelectionStore.endTime)) : 'Select End Time'
+              }}
             </button>
 
             <!-- Modal for End Time Selection -->
@@ -39,37 +41,36 @@
               class="absolute z-10 mt-2 bg-white border border-gray-300 rounded-lg shadow-lg"
               :style="{ width: modalWidth, right: 0 }">
               <div class="p-3">
-                <!-- Responsive Grid for End Time Options -->
                 <div class="grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-2">
                   <button v-for="time in endTimeOptions" :key="time.value" @click="selectEndTime(time.value)"
                     class="p-2 border border-gray-300 rounded-lg hover:bg-blue-100 transition-all text-sm">
-                    <div>{{ formatTime((time.value)) }}</div>
+                    <div>{{ formatTime(time.value) }}</div>
                     <div class="text-xs text-gray-500">{{ time.duration }}</div>
                   </button>
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
     </div>
 
     <!-- Duration Display -->
-    <div v-if="startTime && endTime" class="mt-4 text-lg text-gray-700">
+    <div v-if="dateSelectionStore.startTime && dateSelectionStore.endTime" class="mt-4 text-lg text-gray-700">
       Duration: {{ duration }} minutes
     </div>
 
     <!-- Minimum Capacity and Search Button -->
-    <div v-if="startTime && endTime && selectedDate" class="mt-4 flex items-end space-x-4">
-      <!-- Minimum Capacity Input -->
-      <div class="w-64"> <!-- Adjust width as needed -->
+    <div v-if="dateSelectionStore.startTime && dateSelectionStore.endTime && dateSelectionStore.selectedDate"
+      class="mt-4 flex items-end space-x-4">
+      <div class="w-64">
         <label class="block text-lg font-medium text-gray-700 mb-2">Minimum Capacity</label>
         <input type="number" v-model="minCapacity"
           class="w-full p-3 border-2 border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
           min="1" placeholder="Enter minimum capacity" />
       </div>
-
-      <!-- Search Button -->
+      <!-- Button To Search for  Rooms -->
       <div>
         <button @click="searchAvailableRooms"
           class="bg-blue-600 text-white px-8 py-3 rounded-lg transition-all transform hover:bg-blue-700 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500">
@@ -81,7 +82,6 @@
     <!-- Available Rooms -->
     <div v-if="showAvailableRooms" class="mt-6">
       <div class="flex justify-between items-center border-b border-gray-200">
-        <!-- Tabs (Available & Unavailable Rooms) -->
         <div class="flex space-x-4">
           <button @click="activeTab = 'available'"
             :class="['py-2 px-4 text-lg font-semibold', activeTab === 'available' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500']">
@@ -92,22 +92,26 @@
             Unavailable Rooms ({{ unavailableRooms.length }})
           </button>
         </div>
+        <!-- Submit Button -->
+        <button v-if="selectedRooms.length > 0" @click="submitReservations"
+          class="bg-green-500 text-white px-8 py-2 rounded-lg transition-all transform hover:bg-green-600 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-500">
+          Submit Reservations
+        </button>
       </div>
-
       <!-- Available Rooms -->
       <div v-if="activeTab === 'available'" class="mt-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div v-for="room in availableRooms" :key="room.id">
-            <RoomInfo :room="room" :available="true" @reserve="reserveRoom" class="mb-4" />
+            <RoomInfo :room="room" :available="true" :selectedRooms="selectedRooms" @reserve="reserveRoom"
+              @remove="removeRoom" class="mb-4" />
           </div>
         </div>
       </div>
-
       <!-- Unavailable Rooms -->
       <div v-if="activeTab === 'unavailable'" class="mt-4">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div v-for="room in unavailableRooms" :key="room.id">
-            <RoomInfo :room="room" :false="false" class="mb-4" />
+            <RoomInfo :room="room" :available="false" :selectedRooms="selectedRooms" class="mb-4" />
           </div>
         </div>
       </div>
@@ -117,26 +121,20 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
+import { useDateSelectionStore } from '../stores/DateSelectionStore';
 import RoomInfo from '../components/RoomInfo.vue';
-import { useRoomStore } from '@/stores/roomStore';
-import { useReservationStore } from '@/stores/ReservationStore';
-import { fetchNonValidReservations } from '@/services/ReservationServices';
+import { fetchNonValidRooms, createReservation } from '../services/ReservationServices';
 import { useToast } from 'vue-toastification';
-import { formatTime } from '../services/TimeFormatService'
+import { formatTime } from '../services/TimeFormatService';
+import { getRooms } from '../services/RoomServices';
 
-
-// Pinia Stores
-const roomStore = useRoomStore();
-const reservationStore = useReservationStore();
+// Initialize store
+const dateSelectionStore = useDateSelectionStore();
 
 // Toast
 const toast = useToast();
 
 // Refs
-const selectedDate = ref(null);
-const startTime = ref(null);
-const endTime = ref(null);
-const endTimeOptions = ref([]);
 const showAvailableRooms = ref(false);
 const availableRooms = ref([]);
 const unavailableRooms = ref([]);
@@ -144,12 +142,41 @@ const activeTab = ref('available');
 const showModal = ref(false);
 const modal = ref(null);
 const minCapacity = ref(null);
+const selectedRooms = ref([]);
 
-// Computed
+// Computed property for end time options
+const endTimeOptions = computed(() => {
+  if (!dateSelectionStore.selectedDate || !dateSelectionStore.startTime) return [];
+
+  const start = new Date(`${dateSelectionStore.selectedDate}T${dateSelectionStore.startTime}:00Z`);
+  const options = [];
+
+  for (let i = 15; i <= 300; i += 15) {
+    const newTime = new Date(start);
+    newTime.setMinutes(newTime.getMinutes() + i);
+    const duration = i < 60 ? `${i}m` : `${Math.floor(i / 60)}h ${i % 60}m`;
+    options.push({
+      value: newTime.toISOString(),
+      label: formatTime(newTime),
+      duration,
+    });
+  }
+  return options;
+});
+
+
+watch([() => dateSelectionStore.selectedDate, () => dateSelectionStore.startTime, () => dateSelectionStore.endTime], () => {
+  // If any of the date or time values change, hide the available rooms
+  showAvailableRooms.value = false;
+}
+);
+
+
+// Computed property for duration
 const duration = computed(() => {
-  if (startTime.value && endTime.value && selectedDate.value) {
-    const startDateTime = new Date(`${selectedDate.value}T${startTime.value}:00Z`);
-    const endDateTime = new Date(endTime.value);
+  if (dateSelectionStore.startTime && dateSelectionStore.endTime && dateSelectionStore.selectedDate) {
+    const startDateTime = new Date(`${dateSelectionStore.selectedDate}T${dateSelectionStore.startTime}:00Z`);
+    const endDateTime = new Date(dateSelectionStore.endTime);
 
     if (endDateTime < startDateTime) {
       return 0;
@@ -160,47 +187,20 @@ const duration = computed(() => {
   return 0;
 });
 
-
-
-const updateEndTimeOptions = () => {
-  if (!startTime.value || !selectedDate.value) return;
-
-  const start = new Date(`${selectedDate.value}T${startTime.value}:00Z`);
-  endTimeOptions.value = [];
-  endTime.value = null;
-
-  for (let i = 15; i <= 300; i += 15) {
-    const newTime = new Date(start);
-    newTime.setMinutes(newTime.getMinutes() + i);
-    const duration = i < 60 ? `${i}m` : `${Math.floor(i / 60)}h ${i % 60}m`;
-    endTimeOptions.value.push({
-      value: newTime.toISOString(),
-      label: formatTime(newTime),
-      duration: duration,
-    });
-  }
-};
-
 const selectEndTime = (time) => {
-  endTime.value = time;
+  dateSelectionStore.endTime = time;
   showModal.value = false;
   exitDisplay();
 };
 
 const searchAvailableRooms = async () => {
   try {
-    const startDateTime = new Date(`${selectedDate.value}T${startTime.value}:00Z`).toISOString();
-    const endDateTime = new Date(endTime.value).toISOString();
-
-    // Fetch rooms with minimum capacity using the room store getter
-    const rooms = roomStore.getRoomsWithCapacity(minCapacity.value);
-
-    // Fetch conflicting reservations
-    const reservations = await fetchNonValidReservations(startDateTime, endDateTime);
-    console.log(reservations)
+    const startDateTime = new Date(`${dateSelectionStore.selectedDate}T${dateSelectionStore.startTime}:00Z`).toISOString();
+    const endDateTime = new Date(dateSelectionStore.endTime).toISOString();
+    const rooms = await getRooms(minCapacity.value);
+    const reservations = await fetchNonValidRooms(startDateTime, endDateTime);
     const reservationIds = new Set(reservations.map(reservation => reservation._id.toString()));
 
-    // Filter available and unavailable rooms
     availableRooms.value = rooms.filter(room => !reservationIds.has(room._id.toString()));
     unavailableRooms.value = rooms.filter(room => reservationIds.has(room._id.toString()));
 
@@ -214,20 +214,33 @@ const exitDisplay = () => {
   showAvailableRooms.value = false;
 };
 
-const reserveRoom = async (room) => {
-  try {
-    const startDateTime = new Date(`${selectedDate.value}T${startTime.value}:00Z`).toISOString();
-    const endDateTime = new Date(endTime.value).toISOString();
+const reserveRoom = (room) => {
+  selectedRooms.value.push(room);
+};
 
-    await reservationStore.createReservation({
-      room_id: room._id,
-      start_time: startDateTime,
-      end_time: endDateTime,
-      created_by_name: "Jacky",
-      status: "active",
-    });
-    toast.success(`Successfully reserved room: , ${room.name}`)
-    await searchAvailableRooms(); // Refresh the list after reservation
+const removeRoom = (room) => {
+  selectedRooms.value = selectedRooms.value.filter(r => r._id !== room._id);
+};
+
+const submitReservations = async () => {
+  try {
+    const startDateTime = new Date(`${dateSelectionStore.selectedDate}T${dateSelectionStore.startTime}:00Z`).toISOString();
+    const endDateTime = new Date(dateSelectionStore.endTime).toISOString();
+
+    for (const room of selectedRooms.value) {
+      await createReservation({
+        room_id: room._id,
+        start_time: startDateTime,
+        end_time: endDateTime,
+        created_by_name: "Jacky",
+        status: "active",
+      });
+      toast.success(`Successfully reserved room: ${room.name}`);
+    }
+
+    selectedRooms.value = [];
+    await searchAvailableRooms();
+    dateSelectionStore.clearState();
   } catch (error) {
     console.error('Reservation failed:', error);
   }
@@ -249,6 +262,4 @@ onMounted(() => {
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside);
 });
-
-watch([startTime, selectedDate], updateEndTimeOptions);
 </script>

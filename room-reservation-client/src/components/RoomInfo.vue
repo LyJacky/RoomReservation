@@ -1,5 +1,7 @@
 <template>
-  <div class="border rounded-lg shadow-md p-4 bg-white hover:shadow-lg transition">
+  <div class="border rounded-lg shadow-md p-4 bg-white hover:shadow-lg transition relative" :class="{
+    'border-4': isSelected
+  }">
     <div class="space-y-1">
       <!-- Display Room Name -->
       <div class="flex items-center justify-between">
@@ -11,13 +13,9 @@
       <!-- Display Room Description -->
       <p class="text-gray-600 text-sm">{{ room.description }}</p>
 
-
       <!-- Display Room Capacity -->
-
       <i class="text-gray-600 text-sm fa fa-users"></i>
       <span class="text-gray-600 ml-0.5 text-sm">{{ room.capacity }}</span>
-
-
 
       <!-- Display Equipment List -->
       <div v-if="room.equipments && room.equipments.length > 0">
@@ -28,30 +26,38 @@
       </div>
     </div>
 
-    <!-- Reserve Button -->
-    <button v-if=available @click="handleReserve"
+    <button v-if="available && !isSelected" @click="handleReserve"
       class="mt-4 bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition">
-      Reserve
+      Add Reservation
+    </button>
+    <button v-if="isSelected" @click="removeReservation"
+      class="mt-4 bg-red-500 hover:bg-red-600 text-white font-medium py-2 px-4 rounded-lg transition">
+      <i class="fa fa-trash" aria-hidden="true"></i>
     </button>
   </div>
 </template>
 
-  
 <script setup>
-
+import { computed } from 'vue';
 
 const props = defineProps({
   room: {
     type: Object,
     required: true,
   },
-  available: true,
+  available: Boolean,
+  selectedRooms: Array
 });
 
-const emit = defineEmits(['reserve']);
+const emit = defineEmits(['reserve', 'remove']);
+
+const isSelected = computed(() => props.selectedRooms.some(r => r._id === props.room._id));
 
 const handleReserve = () => {
   emit('reserve', props.room);
 };
+
+const removeReservation = () => {
+  emit('remove', props.room);
+};
 </script>
-  

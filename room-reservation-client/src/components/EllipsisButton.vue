@@ -1,40 +1,54 @@
 <template>
-  <div class="relative inline-block">
-    <!-- Ellipsis Button -->
-    <button @click="toggleDropdown" class="text-gray-600 hover:text-gray-900 focus:outline-none transition-all duration-200 ease-in-out transform hover:scale-110 
-               hover:bg-gray-200 rounded-full p-2">
-      <span class="text-xl">&#8942;</span> <!-- Ellipsis character -->
-    </button>
-
-    <!-- Dropdown Menu -->
-    <div v-if="isDropdownVisible"
-      class="absolute right-0 mt-2 w-32 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
-      <ul>
-        <li @click="handleOption('edit')" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-          Edit
-        </li>
-        <li @click="handleOption('delete')" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer">
-          Delete
-        </li>
-      </ul>
-    </div>
+  <div class="relative flex items-center justify-center" ref="menuContainer">
+    <Button type="button" icon="pi pi-ellipsis-v" @click="toggle" aria-haspopup="true" aria-controls="overlay_menu"
+      class="p-button-text p-button-sm p-2 border border-gray-300 text-gray-600 hover:text-gray-800" />
+    <Menu ref="menu" id="overlay_menu" :model="items" :popup="true" />
   </div>
 </template>
-  
+
 <script setup>
-import { ref } from 'vue';
+import { ref, defineEmits } from "vue";
+import Button from "primevue/button";
+import Menu from "primevue/menu";
 
-const isDropdownVisible = ref(false);
+const menu = ref();
+const menuContainer = ref();
+const emit = defineEmits(["option-selected"]);
 
-const toggleDropdown = () => {
-  isDropdownVisible.value = !isDropdownVisible.value;
+const items = ref([
+  {
+    label: "Options",
+    items: [
+      {
+        label: "Edit",
+        icon: "pi pi-pencil",
+        command: () => emit("option-selected", "edit"),
+      },
+      {
+        label: "Delete",
+        icon: "pi pi-trash",
+        command: () => emit("option-selected", "delete"),
+      },
+    ],
+  },
+]);
+
+const toggle = (event) => {
+  menu.value.toggle(event);
 };
-
-const handleOption = (option) => {
-  emit('option-selected', option);
-  isDropdownVisible.value = false; // Close dropdown after selection
-};
-
-const emit = defineEmits(['option-selected']);
 </script>
-  
+
+<style scoped>
+:deep(.p-button.p-button-text) {
+  color: #4b5563 !important;
+}
+
+:deep(.p-button.p-button-text:hover) {
+  background: #f3f4f6 !important;
+  color: #1f2937 !important;
+}
+
+:deep(.p-button.p-button-text:focus) {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #9ca3af !important;
+}
+</style>

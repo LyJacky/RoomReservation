@@ -8,11 +8,14 @@
                     <label class="block font-medium mb-1">Room Name</label>
                     <input v-model="roomData.name" type="text" class="w-full border rounded px-3 py-2"
                         placeholder="Enter room name" />
+                    <p v-if="errors.name" class="text-red-500 text-sm">{{ errors.name }}</p>
                 </div>
+
                 <div class="mb-4">
                     <label class="block font-medium mb-1">Description</label>
                     <input v-model="roomData.description" type="text" class="w-full border rounded px-3 py-2"
                         placeholder="Enter description" />
+                    <p v-if="errors.description" class="text-red-500 text-sm">{{ errors.description }}</p>
                 </div>
                 <div class="mb-4">
                     <label class="block font-medium mb-1">Capacity</label>
@@ -61,7 +64,7 @@ const roomData = ref({
     description: '',
     capacity: 1,
     equipments: [],
-    ...props.room, // Override with props.room if provided
+    ...props.room,
 });
 
 // Watch for changes in props.room and update roomData
@@ -75,13 +78,26 @@ watch(() => props.room, (newRoom) => {
     };
 }, { immediate: true });
 
+const errors = ref({
+    name: '',
+    description: '',
+});
+
 const submitForm = () => {
+    errors.value.name = roomData.value.name.trim() ? '' : 'Room name is required';
+    errors.value.description = roomData.value.description.trim() ? '' : 'Description is required';
+
+    if (errors.value.name || errors.value.description) {
+        return; // Stop submission if there are errors
+    }
+
     if (props.isEdit) {
         emit('update:room', { ...roomData.value });
     } else {
         emit('create:room', { ...roomData.value });
     }
 };
+
 
 const removeEquipment = (index) => {
     roomData.value.equipments.splice(index, 1);

@@ -1,6 +1,5 @@
 <template>
   <div class="container mx-auto p-6">
-    <!-- Header -->
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-2xl md:text-3xl font-bold mb-8 text-gray-800 tracking-tight">Room Management</h1>
       <button @click="openCreateModal"
@@ -9,10 +8,8 @@
       </button>
     </div>
 
-    <!-- Room Cards Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div v-for="room in rooms" :key="room._id" class="border p-4 rounded-lg shadow-md relative">
-        <!-- Room Details -->
         <div class="flex justify-between items-center">
           <h3 class="font-bold text-lg">{{ room.name }}</h3>
           <EllipsisButton @option-selected="handleEllipsisOption(room, $event)" class="text-gray-500" />
@@ -27,35 +24,28 @@
       </div>
     </div>
 
-    <!-- Modal -->
-    <ModalPopUp :isOpen="isModalOpen" :room="editableRoom" @update:room="updateRoom" @create:room="createRoom"
+    <ModalPopUp :isOpen="isModalOpen" :room="editableRoom" @update:room="editRoom" @create:room="addRoom"
       :isEdit="isEditing" @close="closeModal" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted } from 'vue';
 import { cloneDeep } from 'lodash';
 import ModalPopUp from '../components/ModalPopUp.vue';
 import EllipsisButton from '../components/EllipsisButton.vue';
 import { useToast } from 'vue-toastification';
-import { useRoomStore } from '@/stores/roomStore';
-import { useReservationStore } from '@/stores/ReservationStore';
+import { getRooms, createRoom, updateRoom, deleteRoomById } from '../services/RoomServices';
 
-const reservationStore = useReservationStore()
-const roomStore = useRoomStore();
-const rooms = computed(() => roomStore.rooms);
-
+const rooms = ref([]);
 const toast = useToast();
 const isModalOpen = ref(false);
-const editableRoom = ref({
-  _id: null,
-  name: '',
-  description: '',
-  capacity: 1,
-  equipments: [],
-});
+const editableRoom = ref({ _id: null, name: '', description: '', capacity: 1, equipments: [] });
 const isEditing = ref(false);
+
+const fetchRooms = async () => {
+  rooms.value = await getRooms();
+};
 
 const openEditModal = (room) => {
   isEditing.value = true;
@@ -65,66 +55,35 @@ const openEditModal = (room) => {
 
 const closeModal = () => {
   isModalOpen.value = false;
-  editableRoom.value = {
-    _id: null,
-    name: '',
-    description: '',
-    capacity: 1,
-    equipments: [],
-  };
+  editableRoom.value = { _id: null, name: '', description: '', capacity: 1, equipments: [] };
 };
 
-const updateRoom = async (updatedRoom) => {
+const editRoom = async (updatedRoom) => {
   try {
-    // Use the store's method to update
-    await roomStore.editRoom(updatedRoom._id, updatedRoom);
+    await updateRoom(updatedRoom._id, updatedRoom);
+    await fetchRooms();
     toast.success('Room updated successfully!');
     closeModal();
   } catch (err) {
-    if (err.response && err.response.status === 500) {
-      toast.error(`There already exists a room with the name ${updatedRoom.name}. Please pick another name for that room.`);
-    } else {
-      console.log(err)
-      toast.error('An unexpected error occurred.');
-    }
+    handleRoomError(err, updatedRoom.name);
   }
 };
 
-const createRoom = async (newRoom) => {
+const addRoom = async (newRoom) => {
   try {
-    await roomStore.addRoom(newRoom);
+    await createRoom(newRoom);
+    await fetchRooms();
     toast.success('Room created successfully!');
     closeModal();
-  } catch (storeError) {
-    console.log("STORE ERROR:", storeError);
-
-    // Check if it's a duplicate name error
-    if (storeError.response && storeError.response.status === 500) {
-      console.log("DUPLICATE NAME ERROR");
-      toast.error(`There already exists a room with the name ${newRoom.name}. Please pick another name for that room.`);
-    } else {
-      console.log("OTHER ERROR");
-      toast.error('An unexpected error occurred.');
-    }
+  } catch (err) {
+    handleRoomError(err, newRoom.name);
   }
-};
-
-const openCreateModal = () => {
-  editableRoom.value = {
-    _id: null,
-    name: '',
-    description: '',
-    capacity: 1,
-    equipments: [],
-  };
-  isEditing.value = false;
-  isModalOpen.value = true;
 };
 
 const deleteRoom = async (roomId) => {
   try {
-    await roomStore.removeRoom(roomId);
-    await reservationStore.fetchAllReservations();
+    await deleteRoomById(roomId);
+    await fetchRooms();
     toast.success('Room deleted successfully along with its corresponding reservations!');
   } catch (err) {
     console.error('Failed to delete room:', err);
@@ -132,10 +91,23 @@ const deleteRoom = async (roomId) => {
 };
 
 const handleEllipsisOption = (room, option) => {
-  if (option === 'edit') {
-    openEditModal(room);
-  } else if (option === 'delete') {
-    deleteRoom(room._id);
+  if (option === 'edit') openEditModal(room);
+  else if (option === 'delete') deleteRoom(room._id);
+};
+
+const handleRoomError = (err, roomName) => {
+  if (err.response && err.response.status === 500) {
+    toast.error(`There already exists a room with the name ${roomName}. Please pick another name.`);
+  } else {
+    toast.error('An unexpected error occurred.');
   }
 };
+
+const openCreateModal = () => {
+  editableRoom.value = { _id: null, name: '', description: '', capacity: 1, equipments: [] };
+  isEditing.value = false;
+  isModalOpen.value = true;
+};
+
+onMounted(fetchRooms);
 </script>

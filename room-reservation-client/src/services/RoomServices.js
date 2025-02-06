@@ -16,9 +16,7 @@ export const getRooms = async (capacity) => {
 
 export const createRoom = async (roomData) => {
     try {
-        console.log("Creating room with data:", roomData);
         const response = await axios.post(`${API_BASE_URL}/room`, roomData);
-        console.log(response)
         return response.data;
     } catch (error) {
         throw error;
@@ -36,7 +34,7 @@ export const updateRoom = async (roomId, roomData) => {
     }
 };
 
-export const deleteRoom = async (roomId) => {
+export const deleteRoomById = async (roomId) => {
     try {
         await axios.delete(`${API_BASE_URL}/room/${roomId}`);
     } catch (error) {
