@@ -12,7 +12,7 @@ class ReservationRepository {
 
         if (dateRange) {
             filter.$or = [
-                { start_time: { $gte: dateRange.start, $lte: dateRange.end } }, // Starts in range
+                { start_time: { $gte: dateRange.start, $lt: dateRange.end } }, // Starts in range
                 { end_time: { $gt: dateRange.start, $lte: dateRange.end } }, // Ends in range
                 { start_time: { $lte: dateRange.start }, end_time: { $gte: dateRange.end } } // Overlaps range
             ];
