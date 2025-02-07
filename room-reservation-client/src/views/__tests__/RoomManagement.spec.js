@@ -13,18 +13,14 @@ vi.mock('../../services/RoomService', () => ({
     deleteRoomById: vi.fn()
 }));
 
-
-vi.mock('vue-toastification', () => ({
-    useToast: vi.fn(() => ({
-        success: vi.fn(),
-        error: vi.fn(),
-    })),
-}));
-
+vi.mock('vue-toastification');
+useToast.mockReturnValue({
+    success: vi.fn(),
+    error: vi.fn()
+});
 
 describe('RoomManagement.vue', () => {
     let wrapper;
-
     beforeEach(async () => {
         getRooms.mockResolvedValue([
             { _id: '1', name: 'Room A', description: 'A conference room', capacity: 10, equipments: [] },
@@ -41,7 +37,6 @@ describe('RoomManagement.vue', () => {
             }
         });
 
-        await wrapper.vm.$nextTick();
     });
     afterEach(() => {
         vi.clearAllMocks();  // Clears all mock call counts
@@ -70,6 +65,8 @@ describe('RoomManagement.vue', () => {
         await wrapper.vm.addRoom({ name: 'Room C', description: 'New room', capacity: 8, equipments: [] });
         expect(createRoom).toHaveBeenCalled();
         expect(getRooms).toHaveBeenCalledTimes(2);
+        expect(useToast().success).toHaveBeenCalledWith('Room created successfully!');
+
     });
 
     it('updates a room successfully', async () => {
@@ -77,6 +74,8 @@ describe('RoomManagement.vue', () => {
         await wrapper.vm.editRoom({ _id: '1', name: 'Room A Updated', description: 'Updated description', capacity: 12 });
         expect(updateRoom).toHaveBeenCalled();
         expect(getRooms).toHaveBeenCalledTimes(2);
+        expect(useToast().success).toHaveBeenCalledWith('Room updated successfully!');
+
     });
 
     it('deletes a room successfully', async () => {
@@ -84,5 +83,7 @@ describe('RoomManagement.vue', () => {
         await wrapper.vm.deleteRoom('1');
         expect(deleteRoomById).toHaveBeenCalledWith('1');
         expect(getRooms).toHaveBeenCalledTimes(2);
+        expect(useToast().success).toHaveBeenCalledWith('Room deleted successfully along with its corresponding reservations!');
+
     });
 });

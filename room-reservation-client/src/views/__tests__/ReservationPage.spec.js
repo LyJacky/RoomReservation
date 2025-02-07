@@ -5,8 +5,14 @@ import { useDateSelectionStore } from '../../stores/DateSelectionStore';
 import { getRooms } from '../../services/RoomService';
 import { fetchNonValidRooms, createReservation } from '../../services/ReservationService';
 import { createTestingPinia } from '@pinia/testing';
-import { setActivePinia, createPinia } from 'pinia';
-import { createApp } from 'vue';
+import { useToast } from 'vue-toastification';
+
+
+vi.mock('vue-toastification');
+useToast.mockReturnValue({
+    success: vi.fn(),
+    error: vi.fn()
+});
 
 // Mock dependencies
 vi.mock('../../services/RoomService', () => ({
@@ -33,18 +39,7 @@ describe('ReservationPage.vue', () => {
         const pinia = createTestingPinia({
             createSpy: vi.fn(),  // Create spies to track store actions
             stubActions: false,   // Ensure actions are not stubbed
-            initialState: {
-                dateSelectionStore: {
-                    selectedDate: '2025-02-10',
-                    startTime: '09:00',
-                    endTime: '2025-02-10T10:00:00Z',
-                    clearState: vi.fn(), // Mock the clearState method
-                },
-            },
         });
-        const app = createApp({});
-        app.use(pinia);
-        setActivePinia(pinia);
 
         store = useDateSelectionStore();
         wrapper = mount(ReservationPage, {
@@ -55,7 +50,7 @@ describe('ReservationPage.vue', () => {
     });
 
     afterEach(() => {
-        vi.clearAllMocks();  // Reset mocks after each test
+        vi.clearAllMocks();
     });
 
     it('renders the component correctly', () => {
@@ -89,22 +84,18 @@ describe('ReservationPage.vue', () => {
         store.endTime = new Date('2025-02-10T10:00:00Z').toISOString();
 
         await wrapper.find('button').trigger('click');
-        await wrapper.vm.$nextTick();  // Ensure async actions complete
-
         wrapper.vm.reserveRoom({ _id: '1', name: 'Room A' });
         expect(wrapper.vm.selectedRooms.length).toBe(1);
+
     });
 
     it('submits reservations successfully', async () => {
-        // Set up the store state
         store.selectedDate = '2025-02-10';
         store.startTime = '09:00';
         store.endTime = '2025-02-10T10:00:00Z';
 
-        // Set up selected rooms
         wrapper.vm.selectedRooms = [{ _id: '1', name: 'Room A' }];
 
-        // Call the submitReservations method
         store.clearState = vi.fn(() => {
             store.selectedDate = '';
             store.startTime = '';
@@ -113,7 +104,6 @@ describe('ReservationPage.vue', () => {
 
         await wrapper.vm.submitReservations();
 
-        // Assertions
         expect(createReservation).toHaveBeenCalledWith({
             room_id: '1',
             start_time: '2025-02-10T09:00:00.000Z',
@@ -121,5 +111,7 @@ describe('ReservationPage.vue', () => {
             created_by_name: 'Jacky',
             status: 'active',
         });
+        expect(useToast().success).toHaveBeenCalledWith("Successfully reserved room: Room A");
+
     });
 });
