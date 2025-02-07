@@ -61,17 +61,25 @@ docker build -t room-reservation-vue-dev .
 
 #### Step 2: Create a container from your Docker image (The Docker images should have been created from the previous command)
 
-##### To run the server run this command: 
+##### To create a container for the server run this command: 
 
 ```console
 docker run -p 8080:8080 room-reservation-server
 ```
 
-##### To run the client run this command: 
+##### To create a container for the client run this command:  
 
 ```console
 docker run -p 5173:5173 room-reservation-vue-dev
 ```
+
+#### Step 3: Run the client:
+
+##### Run the following URL on your browser:
+```console
+http://localhost:5173/
+```
+
 
 
 ### Option 2: Run it locally by installing dependencies
